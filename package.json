@@ -1,0 +1,23 @@
+{
+  "name": "express-basics",
+  "version": "1.0.0",
+  "description": "Just learning the basaics of Express.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julianinsua/express-basics.git"
+  },
+  "author": "Julian Insua",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/julianinsua/express-basics/issues"
+  },
+  "homepage": "https://github.com/julianinsua/express-basics#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
