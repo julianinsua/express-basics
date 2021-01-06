@@ -16,7 +16,9 @@
     "url": "https://github.com/julianinsua/express-basics/issues"
   },
   "homepage": "https://github.com/julianinsua/express-basics#readme",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1"
+  },
   "devDependencies": {
     "nodemon": "^2.0.7"
   }
