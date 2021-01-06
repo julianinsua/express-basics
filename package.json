@@ -2,9 +2,10 @@
   "name": "express-basics",
   "version": "1.0.0",
   "description": "Just learning the basaics of Express.js",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
