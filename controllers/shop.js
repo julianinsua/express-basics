@@ -27,6 +27,12 @@ exports.getCart = (req, res, next) => {
   });
 };
 
+exports.postCart = (req, res, next) => {
+  const productId = req.body.productId;
+  console.log(productId);
+  res.redirect("/cart");
+};
+
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
@@ -38,5 +44,16 @@ exports.getOrders = (req, res, next) => {
   res.render("shop/orders", {
     path: "/orders",
     pageTitle: "Your Orders",
+  });
+};
+
+exports.getProductDetails = (req, res) => {
+  const productId = req.params.productId;
+  Product.findById(productId, (product) => {
+    res.render("shop/product-detail", {
+      product,
+      pageTitle: product.title,
+      path: "/products",
+    });
   });
 };
