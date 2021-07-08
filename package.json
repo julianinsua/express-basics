@@ -16,8 +16,10 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "express": "^4.16.3",
+    "mongodb": "^3.6.6",
     "mysql2": "^2.2.5",
     "sequelize": "^6.6.2"
   }
