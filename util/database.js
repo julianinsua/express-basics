@@ -4,12 +4,14 @@ const MongoClient = mongodb.MongoClient;
 let _db;
 
 const mongoConnect = () => {
-  MongoClient.connect(process.env.API_URL)
+  console.log("Attempting Connection");
+  MongoClient.connect(process.env.API_URL, { useUnifiedTopology: true })
     .then((client) => {
-      console.log("Conection Success");
+      console.log("Connection Success");
       _db = client.db();
     })
     .catch((e) => {
+      console.log("Connection failed");
       console.log(e);
       throw e;
     });
