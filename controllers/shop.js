@@ -1,8 +1,10 @@
 const Product = require("../models/product");
+const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
+      console.log(products);
       res.render("shop/product-list", {
         products,
         pageTitle: "All Products",
@@ -13,7 +15,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         products,
@@ -28,8 +30,10 @@ exports.getCart = (req, res, next) => {
   const { user } = req;
 
   user
-    .getCart()
-    .then((products) => {
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items;
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -56,7 +60,7 @@ exports.postDeleteCartItem = (req, res, next) => {
   const { user } = req;
 
   user
-    .deleteFromCart(productId)
+    .removeFromCart(productId)
     .then((result) => {
       res.redirect("/cart");
     })
@@ -65,9 +69,7 @@ exports.postDeleteCartItem = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   const { user } = req;
-
-  user
-    .getOrders()
+  Order.find({ "user.userId": user._id })
     .then((orders) => {
       res.render("shop/orders", {
         path: "/orders",
@@ -94,10 +96,23 @@ exports.getProductDetails = (req, res) => {
 
 exports.postOrder = (req, res) => {
   const { user } = req;
-
   user
-    .addOrder()
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items.map((i) => {
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
+      });
+      const order = new Order({
+        products,
+        user: { name: user.name, userId: user },
+      });
+      return order.save();
+    })
     .then((result) => {
+      return user.clearCart();
+    })
+    .then(() => {
       res.redirect("/orders");
     })
     .catch((e) => console.log(e));

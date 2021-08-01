@@ -1,8 +1,8 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const User = require("./models/user");
-const { mongoConnect } = require("./util/database");
 const { pageNotFound } = require("./controllers/404");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -19,20 +19,32 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("60e8ea6b8261797664b78f0e")
+  User.findById("6104165d48e03fc6ff55d477")
     .then((user) => {
-      const { username, email, cart, _id } = user;
-      req.user = new User(username, email, cart, _id);
+      req.user = user;
       next();
     })
     .catch((e) => console.log(e));
 });
-
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(pageNotFound);
 
-mongoConnect().then(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(process.env.API_URL, { useNewUrlParser: true })
+  .then((result) => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Julian",
+          email: "test@test.com",
+          cart: { items: [] },
+        });
+        user.save();
+      }
+    });
+
+    app.listen(3000);
+  })
+  .catch((e) => console.log(e));
