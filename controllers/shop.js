@@ -28,6 +28,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
+  console.log(req.user);
   const { user } = req;
 
   user
@@ -52,7 +53,6 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then((result) => {
-      console.log("postCart", result);
       res.redirect("/cart");
     });
 };
@@ -84,10 +84,9 @@ exports.getOrders = (req, res, next) => {
 };
 
 exports.getProductDetails = (req, res) => {
-  const productId = req.params.productId;
+  const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
-      console.log(product);
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product.title,

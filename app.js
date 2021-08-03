@@ -35,12 +35,17 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById("6104165d48e03fc6ff55d477")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((e) => console.log(e));
+  if (req.session.user) {
+    User.findById(req.session.user._id)
+      .then((user) => {
+        console.log(user);
+        req.user = user;
+        next();
+      })
+      .catch((e) => console.log(e));
+  } else {
+    next();
+  }
 });
 
 app.use(authRoutes);
