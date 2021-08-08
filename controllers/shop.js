@@ -4,11 +4,11 @@ const Order = require("../models/order");
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
-      console.log(products);
       res.render("shop/product-list", {
         products,
         pageTitle: "All Products",
         path: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((e) => console.log(e));
@@ -21,12 +21,14 @@ exports.getIndex = (req, res, next) => {
         products,
         pageTitle: "Shop",
         path: "/",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((e) => console.log(e));
 };
 
 exports.getCart = (req, res, next) => {
+  console.log(req.user);
   const { user } = req;
 
   user
@@ -38,6 +40,7 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         pageTitle: "Your Cart",
         products,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((e) => console.log(e));
@@ -50,7 +53,6 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then((result) => {
-      console.log("postCart", result);
       res.redirect("/cart");
     });
 };
@@ -75,20 +77,21 @@ exports.getOrders = (req, res, next) => {
         path: "/orders",
         pageTitle: "Your Orders",
         orders,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((e) => console.log(e));
 };
 
 exports.getProductDetails = (req, res) => {
-  const productId = req.params.productId;
+  const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
-      console.log(product);
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product.title,
         path: "/products",
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((e) => console.log(e));
