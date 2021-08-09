@@ -28,7 +28,6 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  console.log(req.user);
   const { user } = req;
 
   user
