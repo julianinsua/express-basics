@@ -56,17 +56,6 @@ app.use(pageNotFound);
 mongoose
   .connect(process.env.API_URL, { useNewUrlParser: true })
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Julian",
-          email: "test@test.com",
-          cart: { items: [] },
-        });
-        user.save();
-      }
-    });
-
     app.listen(3000);
   })
   .catch((e) => console.log(e));
