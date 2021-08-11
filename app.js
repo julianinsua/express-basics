@@ -4,6 +4,8 @@ const session = require("express-session");
 const SessionStore = require("connect-mongodb-session")(session);
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const csrf = require("csurf");
+const flash = require("connect-flash");
 const User = require("./models/user");
 const { pageNotFound } = require("./controllers/404");
 const dotenv = require("dotenv");
@@ -14,6 +16,7 @@ const store = new SessionStore({
   uri: process.env.API_URL,
   collection: "sessions",
 });
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -34,6 +37,9 @@ app.use(
   })
 );
 
+app.use(flash());
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   if (req.session.user) {
     User.findById(req.session.user._id)
@@ -45,6 +51,12 @@ app.use((req, res, next) => {
   } else {
     next();
   }
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use(authRoutes);
