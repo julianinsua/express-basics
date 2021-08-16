@@ -1,5 +1,13 @@
+const { createTransport } = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 const User = require("../models/user");
 const { hash, compare } = require("bcryptjs");
+
+const transporter = createTransport(
+  sendgridTransport({
+    auth: { api_key: process.env.MAILER_KEY },
+  })
+);
 
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
@@ -72,6 +80,14 @@ exports.postSignup = (req, res, next) => {
     })
     .then(() => {
       res.redirect("/login");
+      return transporter
+        .sendMail({
+          to: email,
+          from: "pepito@pepito.com",
+          subject: "testing your mail",
+          html: "<h1>Living on the edge</h1><p>Just testing some html</p>",
+        })
+        .catch((e) => console.log(e));
     })
     .catch((e) => console.log(e));
 };
