@@ -1,6 +1,7 @@
 const { createTransport } = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const User = require("../models/user");
+const crypto = require("crypto");
 const { hash, compare } = require("bcryptjs");
 
 const transporter = createTransport(
@@ -95,5 +96,45 @@ exports.postSignup = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
   req.session.destroy(() => {
     res.redirect("/");
+  });
+};
+
+exports.getReset = (req, res, next) => {
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Reset Password",
+    errorMessage: req.flash("error"),
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (error, buffer) => {
+    if (error) {
+      console.log(error);
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "No account with that email.");
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000; // 3600000 is an hour in miliseconds
+
+        return user.save();
+      })
+      .then((result) => {
+        res.redirect("/");
+        return transporter.sendMail({
+          to: req.body.email,
+          from: "pepito@pepito.com",
+          subject: "Password Reset",
+          html: `<h1>You requested a password change</h1>
+<p>You requested a password Reset. Click on the <a href="http://localhost:3000/reset/${token}">this link</a> to set a new password..`,
+        });
+      })
+      .catch((e) => console.log(e));
   });
 };

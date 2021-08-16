@@ -13,23 +13,18 @@
     <form
             class="login-form"
             method="POST"
-            action= "/login"
+            action= "/reset"
     >
+        <p>Enter your the email address you registered with and we will send a mail to your inbox to restore your password</p>
         <div class="form-control">
             <label for="email">Email</label>
             <input type="email" name="email" id="email">
         </div>
-        <div class="form-control">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-        </div>
+
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button class="btn" type="submit">
-            Log In
+            Reset Password
         </button>
     </form>
-    <div class="centered">
-        <a href="/reset">Forgot your password?</a>
-    </div>
 </main>
 <%- include('../includes/end.ejs') %>
