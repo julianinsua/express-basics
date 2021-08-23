@@ -119,6 +119,7 @@ exports.postReset = (req, res, next) => {
       .then((user) => {
         if (!user) {
           req.flash("error", "No account with that email.");
+          return res.redirect("/reset");
         }
         user.resetToken = token;
         user.resetTokenExpiration = Date.now() + 3600000; // 3600000 is an hour in miliseconds
@@ -132,7 +133,7 @@ exports.postReset = (req, res, next) => {
           from: "pepito@pepito.com",
           subject: "Password Reset",
           html: `<h1>You requested a password change</h1>
-<p>You requested a password Reset. Click on the <a href="http://localhost:3000/reset/${token}">this link</a> to set a new password..`,
+<p>You requested a password Reset. Click on <a href="http://localhost:3000/reset/${token}">this link</a> to set a new password..`,
         });
       })
       .catch((e) => console.log(e));
