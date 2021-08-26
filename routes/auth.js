@@ -8,6 +8,7 @@ const {
   postSignup,
   getReset,
   postReset,
+  getNewPassword,
 } = require("../controllers/auth");
 
 router.get("/login", getLogin);
@@ -17,5 +18,6 @@ router.get("/signup", getSignup);
 router.post("/signup", postSignup);
 router.get("/reset", getReset);
 router.post("/reset", postReset);
+router.get("/new-password/:token", getNewPassword);
 
 module.exports = router;
