@@ -16,17 +16,35 @@ exports.getLogin = (req, res, next) => {
     path: "/login",
     pageTitle: "Login",
     errorMessage: req.flash("error"),
+    oldInput: { email: "", password: "" },
+    validationErrors: [],
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: "Invalid email or password",
+      validationErrors: [],
+      oldInput: { email, password },
+    });
+  }
+
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "Invalid email or password");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          path: "/login",
+          pageTitle: "Login",
+          errorMessage: errors.array()[0].msg,
+          validationErrors: [],
+          oldInput: { email, password },
+        });
       }
 
       compare(password, user.password)
@@ -41,8 +59,13 @@ exports.postLogin = (req, res, next) => {
               return res.redirect("/");
             });
           }
-          req.flash("error", "Invalid email or password");
-          res.redirect("/login");
+          res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Login",
+            errorMessage: "Invalid email or password",
+            validationErrors: errors.array(),
+            oldInput: { email, password },
+          });
         })
         .catch((e) => {
           console.log(e);
@@ -57,6 +80,8 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     pageTitle: "Sign up",
     errorMessage: req.flash("error"),
+    validationErrors: [],
+    oldInput: { email: "", password: "", confirmPassword: "" },
   });
 };
 
@@ -70,24 +95,21 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       pageTitle: "Sign up",
       errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+      oldInput: { email, password, confirmPassword },
     });
   }
-  User.findOne({ email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash("error", "Email currently in use");
-        return res.redirect("/signup");
-      }
-      // I hate nested thens, I would rather use async await but i dont want to screw future parts of the course
-      // TODO refactor to avoid nested .then blocks
-      return hash(password, 12).then((hashedPassword) => {
-        const user = new User({
-          email,
-          password: hashedPassword,
-          cart: { items: [] },
-        });
-        return user.save();
+
+  // I hate nested thens, I would rather use async await but i dont want to screw future parts of the course
+  // TODO refactor to avoid nested .then blocks
+  return hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email,
+        password: hashedPassword,
+        cart: { items: [] },
       });
+      return user.save();
     })
     .then(() => {
       res.redirect("/login");
@@ -99,8 +121,7 @@ exports.postSignup = (req, res, next) => {
           html: "<h1>Living on the edge</h1><p>Just testing some html</p>",
         })
         .catch((e) => console.log(e));
-    })
-    .catch((e) => console.log(e));
+    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -143,7 +164,7 @@ exports.postReset = (req, res, next) => {
           from: "pepito@pepito.com",
           subject: "Password Reset",
           html: `<h1>You requested a password change</h1>
-<p>You requested a password Reset. Click on <a href="http://localhost:3000/reset/${token}">this link</a> to set a new password..`,
+<p>You requested a password Reset. Click on <a href="http://localhost:3000/new-password/${token}">this link</a> to set a new password..`,
         });
       })
       .catch((e) => console.log(e));
