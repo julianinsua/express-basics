@@ -10,7 +10,12 @@ exports.getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -22,11 +27,15 @@ exports.getIndex = (req, res, next) => {
         path: "/",
       });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.getCart = (req, res, next) => {
-  console.log("pepito");
   const { user } = req;
 
   user
@@ -40,7 +49,12 @@ exports.getCart = (req, res, next) => {
         products,
       });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -51,6 +65,12 @@ exports.postCart = (req, res, next) => {
     })
     .then((result) => {
       res.redirect("/cart");
+    })
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
     });
 };
 
@@ -63,7 +83,12 @@ exports.postDeleteCartItem = (req, res, next) => {
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.getOrders = (req, res, next) => {
@@ -76,10 +101,15 @@ exports.getOrders = (req, res, next) => {
         orders,
       });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
-exports.getProductDetails = (req, res) => {
+exports.getProductDetails = (req, res, next) => {
   const { productId } = req.params;
   Product.findById(productId)
     .then((product) => {
@@ -89,7 +119,12 @@ exports.getProductDetails = (req, res) => {
         path: "/products",
       });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.postOrder = (req, res) => {

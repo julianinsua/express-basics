@@ -72,7 +72,12 @@ exports.postLogin = (req, res, next) => {
           res.redirect("/login");
         });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    });
 };
 
 exports.getSignup = (req, res, next) => {
@@ -120,7 +125,12 @@ exports.postSignup = (req, res, next) => {
           subject: "testing your mail",
           html: "<h1>Living on the edge</h1><p>Just testing some html</p>",
         })
-        .catch((e) => console.log(e));
+        .catch((e) => {
+          const error = new Error(e);
+          error.httpStatusCode = 500;
+
+          return next(error);
+        });
     });
 };
 
@@ -167,7 +177,12 @@ exports.postReset = (req, res, next) => {
 <p>You requested a password Reset. Click on <a href="http://localhost:3000/new-password/${token}">this link</a> to set a new password..`,
         });
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        const error = new Error(e);
+        error.httpStatusCode = 500;
+
+        return next(error);
+      });
   });
 };
 
@@ -189,7 +204,10 @@ exports.getNewPassword = (req, res, next) => {
         passwordToken: token,
       });
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((e) => {
+      const error = new Error(e);
+      error.httpStatusCode = 500;
+
+      return next(error);
     });
 };
