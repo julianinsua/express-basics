@@ -7,6 +7,7 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const helmet = require("helmet");
 const User = require("./models/user");
 const { pageNotFound, get500 } = require("./controllers/errors");
 const dotenv = require("dotenv");
@@ -47,6 +48,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
@@ -103,6 +105,6 @@ app.use(pageNotFound);
 mongoose
   .connect(process.env.API_URL, { useNewUrlParser: true })
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((e) => console.log(e));
