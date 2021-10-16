@@ -113,7 +113,10 @@ app.use((error, req, res, next) => {
 app.use(pageNotFound);
 
 mongoose
-  .connect(process.env.API_URL, { useNewUrlParser: true })
+  .connect(process.env.API_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then((result) => {
     app.listen(process.env.PORT || 3000);
   })
